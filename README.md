@@ -5,7 +5,7 @@
 ## Introduction
 
 <p align="center">
-<img align="middle" src="./assets/CytoSet.png" alt="CytoSet" width="800" height="400" />
+<img align="middle" src="./assets/CytoSet.png" alt="CytoSet" width="600" />
 </p>
 
 
