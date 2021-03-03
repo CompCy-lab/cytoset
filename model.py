@@ -1,11 +1,60 @@
+import copy
+import json
+import yaml
 import logging
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from thornet.utils import file_utils
-from thornet.config import Config
+
 
 logger = logging.getLogger(__name__)
+
+
+## config class
+class Config(object):
+    def __init__(self):
+        pass
+
+    @classmethod
+    def from_dict(cls, json_object):
+        """Construct the config from a python dictionary"""
+        config = Config()
+        for key, value in json_object.items():
+            config.__dict__[key] = value
+        return config
+
+    @classmethod
+    def from_args(cls, args):
+        """convert the namespace to dict"""
+        return cls.from_dict(dict(args._get_kwargs()))
+
+    @classmethod
+    def from_json_file(cls, json_file: str):
+        """Construct the config from a json file"""
+        with open(json_file, 'r', encoding='utf-8') as f:
+            context = f.read()
+        return cls.from_dict(json.loads(context))
+
+    @classmethod
+    def from_yaml_file(cls, yaml_file: str):
+        """Construct the config from a yaml file"""
+        with open(yaml_file, 'r', encoding='utf-8') as f:
+            context = f.read()
+        return cls.from_dict(yaml.safe_load(context))
+
+    def to_json_file(self, json_file):
+        with open(json_file, 'w', encoding='utf-8') as f:
+            f.write(self.to_json_string())
+
+    def __repr__(self):
+        return str(self.to_json_string())
+
+    def to_dict(self):
+        return copy.deepcopy(self.__dict__)
+
+    def to_json_string(self):
+        """convert a json object to a string"""
+        return json.dumps(self.to_dict(), indent=2, sort_keys=True) + '\n'
 
 
 class Pool(nn.Module):
@@ -49,7 +98,7 @@ class PermEqui2(nn.Module):
         self.Gamma = nn.Linear(in_dim, out_dim)
         self.Lambda = nn.Linear(in_dim, out_dim, bias=False)
         self.pool_module = Pool(dim=1, pool_type=pool)
-    
+
     def forward(self, x):
         """
         Args:
@@ -95,10 +144,11 @@ class CytoSetModel(nn.Module):
         Args:
             - model_path (str): the path to the model file
             - config_path (str): the path to the configuration (args) file
-            - cache_dir (bool): if cache the model file in cache dir 
+            - cache_dir (bool): if cache the model file in cache dir
         """
-        model_file = file_utils.cached_path(model_path, cache_dir)
-        config_file = file_utils.cached_path(config_path, cache_dir)
+        # model_file = file_utils.cached_path(model_path, cache_dir)
+        # config_file = file_utils.cached_path(config_path, cache_dir)
+        model_file, config_file = model_path, config_path
         logger.info("Loading model {} from cache at {}".format(model_path, model_file))
         # load config
         config = Config.from_json_file(config_file)
@@ -106,14 +156,14 @@ class CytoSetModel(nn.Module):
         # instantiate model
         model = cls(config)
         state_dict = torch.load(model_file, map_location='cpu' if not torch.cuda.is_available() else None)
-        model.load_state_dict(state_dict, strict=False)
+        model.load_state_dict(state_dict, strict=True)
         return model
 
     def predict(self, x):
         """ Predict the neg/pos label of samples
         Args:
             - x (Tensor): input of a tensor of shape `(batch, ncell, nmarker)`
-        
+
         Returns:
             predicted label (pos/neg) of shape `(batch, )`
         """

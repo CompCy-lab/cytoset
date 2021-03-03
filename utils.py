@@ -1,4 +1,6 @@
 import os
+import gc
+import psutil
 import numpy as np
 import pandas as pd
 import torch
@@ -25,7 +27,7 @@ class EarlyStopping(object):
             verbose (bool): whether to print a message for each validation loss.
             delta (float): minimum change in the monitored quantity to qualify
                         as an improvement.
-            trace_func (function): trace print function. 
+            trace_func (function): trace print function.
         """
         super(EarlyStopping, self).__init__()
         self.patience = patience
@@ -35,11 +37,11 @@ class EarlyStopping(object):
         self.early_stop = False
         self.val_loss_min = np.inf
         self.delta = delta
-        self.trace_func = trace_func
-    
+        # self.trace_func = trace_func
+
     def __call__(self, val_loss):
         score = - val_loss
-        
+
         if self.best_score is None:
             self.best_score = score
         elif score < self.best_score + self.delta:
@@ -128,9 +130,74 @@ def train_valid_split(samples, sample_ids, k_fold=5):
     """
     X, sample_id = combine_samples(samples, sample_ids)
     kf = StratifiedKFold(n_splits=k_fold)
-    
+
     train_indices, valid_indices = next(kf.split(X, sample_id))
     X_train, id_train = X[train_indices], sample_id[train_indices]
     X_valid, id_valid = X[valid_indices], sample_id[valid_indices]
 
     return X_train, id_train, X_valid, id_valid
+
+
+def down_rsampling(arr: np.array, sample_size, axis=0):
+    selected_idx = np.random.choice(arr.shape[axis], sample_size, replace=False)
+    return arr.take(indices=selected_idx, axis=axis)
+
+
+def generate_subsets(X, pheno_map, sample_id, nsubsets, ncell,
+                     per_sample=False, k_init=False):
+    S = dict()
+    n_out = len(np.unique(sample_id))
+
+    for ylabel in range(n_out):
+        X_i = filter_per_class(X, sample_id, ylabel)
+        if per_sample:
+            S[ylabel] = per_sample_subsets(X_i, nsubsets, ncell, k_init)
+        else:
+            n = nsubsets[pheno_map[ylabel]]
+            S[ylabel] = per_sample_subsets(X_i, n, ncell, k_init)
+
+    # mix them
+    Xt, yt = [], []
+    for y_i, x_i in S.items():
+        Xt.append(x_i)
+        yt.append(pheno_map[y_i] * np.ones(x_i.shape[0], dtype=int))
+    del S
+    gc.collect()
+
+    Xt = np.vstack(Xt)
+    yt = np.hstack(yt)
+    Xt, yt = shuffle(Xt, yt)
+    
+    return Xt, yt
+
+
+def filter_per_class(X, y, ylabel):
+    return X[np.where(y == ylabel)]
+
+
+def per_sample_subsets(X, nsubsets, ncell_per_subset, k_init=False):
+    nmark = X.shape[1]
+    shape = (nsubsets, nmark, ncell_per_subset)
+    Xres = np.zeros(shape, dtype=np.float32)
+
+    if not k_init:
+        for i in range(nsubsets):
+            X_i = random_subsample(X, ncell_per_subset)
+            Xres[i] = X_i.T
+    else:
+        for i in range(nsubsets):
+            X_i = random_subsample(X, 2000)
+            X_i = kmeans_subsample(X_i, ncell_per_subset, random_state=i)
+            Xres[i] = X_i.T
+    return Xres
+
+def random_subsample(X, target_nobs, replace=True):
+
+    """ Draws subsets of cells uniformly at random. """
+
+    nobs = X.shape[0]
+    if (not replace) and (nobs <= target_nobs):
+        return X
+    else:
+        indices = np.random.choice(nobs, size=target_nobs, replace=replace)
+        return X[indices, :]
