@@ -27,5 +27,7 @@ jobs:
           command: |
             . ~/venv/bin/activate
             python3 train.py --help
-            python test.py --model checkpoints/HEUvsUE_model.pt --config config/model/HEUvsUE/config.json --test_pkl checkpoints/test_HEUvsUE.pkl
+            python3 test.py --model checkpoints/HEUvsUE_model.pt --config config/model/HEUvsUE/config.json --test_pkl checkpoints/test_HEUvsUE.pkl
+      - store_test_results:
+          path: test_reports
         

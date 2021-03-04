@@ -60,8 +60,7 @@ def test(args):
     model = model.to(args.device)
 
     # read the test dataset
-    test_pkl = file_utils.cached_path(url_or_filename=args.test_pkl, cache_dir="./cache")
-    with open(test_pkl, 'rb') as f:
+    with open(args.test_pkl, 'rb') as f:
         test_data = pickle.load(f)
     test_samples, test_phenotypes = test_data['test_sample'], test_data['test_phenotype']
 
