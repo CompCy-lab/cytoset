@@ -16,17 +16,24 @@ from torch.utils.data import DataLoader
 from sklearn.utils import shuffle
 from sklearn.metrics import roc_auc_score, roc_curve
 
-from thornet.logging.logger import WandbLogger
-from thornet.config import Config
-from thornet.utils.seed import set_seed
-from thornet.models.util import count_params
-from thornet.logging.meters import AverageMeter
+import random
+from meters import AverageMeter
+from logger import WandbLogger
 
 from model import CytoSetModel
+from model import Config, count_params
 from data import CytoDatasetFromFCS
 from utils import (
     EarlyStopping, load_fcs_dataset, train_valid_split, combine_samples, down_rsampling
 )
+
+
+def set_seed(seed):
+    torch.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    np.random.seed(seed)
+    random.seed(seed)
 
 
 def test_valid(test_loader, model, args):

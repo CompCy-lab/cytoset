@@ -57,6 +57,12 @@ class Config(object):
         return json.dumps(self.to_dict(), indent=2, sort_keys=True) + '\n'
 
 
+def count_params(model: nn.Module):
+    """ Count the parameter numbers of a module """
+    assert isinstance(model, nn.Module)
+    return sum(p.numel() for p in model.parameters())
+
+
 class Pool(nn.Module):
     """ the module to perform max, mean or sum pooling operation"""
     def __init__(
