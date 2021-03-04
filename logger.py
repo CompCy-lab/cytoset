@@ -11,9 +11,13 @@ from typing import (
 )
 from collections import OrderedDict
 from numbers import Number
-from thornet.utils import make_dir
 
 logger = logging.getLogger(__name__)
+
+
+def make_dir(dirname):
+    if not os.path.exists(path=dirname):
+        os.makedirs(dirname)
 
 
 def time_str(fmt=None):
