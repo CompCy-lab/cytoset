@@ -7,7 +7,6 @@ matplotlib==3.3.2
 psutil==5.7.2
 FlowIO==0.9.8
 tqdm==4.50.2
-parc==0.31
 PyYAML==5.4.1
 rich==9.12.4
 scikit_learn==0.24.1
