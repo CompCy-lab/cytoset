@@ -37,6 +37,22 @@ The pre-processed dataset for training the model can be downloaded from the [goo
 * In ``scripts/train/train_[Dataset].sh``, set ``bin_file`` to the path of ``train.py`` and ``gpu`` to the gpu id.
 * Start training: ``bash train_[Dataset].sh``
 
+### Testing
+
+* We provide our pre-trained model on HEUvsUE dataset and test dataset in ``checkpoints``.
+* We also provide our model configuration for each dataset in ``config/model``.
+* To run the testing, you can use the following command:
+
+```
+python test.py --model checkpoints/HEUvsUE_model.pt --config config/model/HEUvsUE/config.json --test_pkl checkpoints/test_HEUvsUE.pkl
+```
+
+The evaluation results are:
+
+| Accuracy  | Area Under Curve |
+|-----------|------------------|
+|   0.903   |     0.931        |
+
 
 ## Citing
 
