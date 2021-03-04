@@ -9,24 +9,24 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-        keys:
-          - deps-dependencies-{{ .Branch }}-{{ checksum "requirements.txt" }}
-          - deps-dependencies-{{ .Branch }}-
+          keys:
+            - deps-dependencies-{{ .Branch }}-{{ checksum "requirements.txt" }}
+            - deps-dependencies-{{ .Branch }}-
       - run:
-        name: install dependencies
-        command: |
-          python3 -m venv ~/venv
-          . ~/venv/bin/activate
-          pip install -r requirements.txt
+          name: install dependencies
+          command: |
+            python3 -m venv ~/venv
+            . ~/venv/bin/activate
+            pip install -r requirements.txt
       - save_cache:
-        paths:
-          - ~/venv
-        key: deps-dependencies-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          paths:
+            - ~/venv
+          key: deps-dependencies-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run:
-        name: run tests
-        command: |
-          . ~/venv/bin/activate
-          python3 train.py --help
+          name: run tests
+          command: |
+            . ~/venv/bin/activate
+            python3 train.py --help
       - store_test_results:
-        path: test-reports
+          path: test-reports
         
