@@ -4,8 +4,8 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.8.5
-      - working_directory: ~/cytoset
+      - image: circleci/python:3.6.4
+    working_directory: ~/cytoset
     steps:
       - checkout
       - restore_cache:
