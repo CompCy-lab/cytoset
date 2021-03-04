@@ -14,7 +14,6 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from sklearn.utils import shuffle
 from sklearn.metrics import roc_auc_score
-from thornet.utils import file_utils
 
 from model import CytoSetModel
 from data import CytoDatasetFromFCS
