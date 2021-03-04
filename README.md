@@ -1,6 +1,6 @@
 # CytoSet
 
----
+[![CircleCI](https://circleci.com/gh/CompCy-lab/cytoset.svg?style=svg&circle-token=7070f7f23c7fccba6d452bcfd2ee2a1cb469a6e0)](https://circleci.com/gh/CompCy-lab/cytoset)
 
 ## Introduction
 
