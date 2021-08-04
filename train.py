@@ -149,7 +149,7 @@ def train(args):
     if (args.valid_fcs_info is not None or args.valid_pkl is not None) or args.generate_valid:
         if args.valid_fcs_info is not None:
             valid_samples, valid_phenotypes = load_fcs_dataset(
-                args.valid_fcs_info, args.marker_file, args.co_factor
+                args.valid_fcs_info, args.markerfile, args.co_factor
             )
             X_train, id_train = combine_samples(train_samples, np.arange(len(train_samples)))
             X_valid, id_valid = combine_samples(valid_samples, np.arange(len(valid_samples)))
