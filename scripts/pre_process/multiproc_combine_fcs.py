@@ -42,13 +42,14 @@ def main(args):
     fcs_info = pd.read_csv(args.fcs_info_file, sep=',')
     fcs_info_grouped = fcs_info.groupby(by=[args.individual_name])
     markers = args.marker.strip('\n').split(',')
+    opt_markers = args.opt_marker.strip('\n').split(',')
 
     os.makedirs(args.out_dir, exist_ok=True)
     print("Start writing the fcs files")
 
     combiner = MpCombiner(args)
     pool = multiprocessing.Pool(args.nprocs)
-    tasks = pool.imap_unordered(combiner.combine, fcs_info_grouped)
+    tasks = pool.imap(combiner.combine, fcs_info_grouped)
 
     count = 0
     with tqdm(range(len(fcs_info_grouped))) as t:
@@ -58,6 +59,7 @@ def main(args):
                 flowio.create_fcs(
                     events.flatten().tolist(),
                     channel_names=markers,
+                    opt_channel_names=opt_markers,
                     file_handle=fh
                 )
             count += 1
@@ -69,14 +71,16 @@ def main(args):
 
     # write meta file
     meta_file_path = os.path.join(args.out_dir, 'sample_with_labels.csv')
-    FCS_file, label = [], []
+    FCS_file, label, ind = [], [], []
     for ind_name, df in fcs_info_grouped:
         FCS_file.append(f"{str(ind_name).zfill(4)}.FCS")
+        ind.append(f"{str(ind_name)}"),
         label.append(df[args.label_name].values[0])
 
     meta_df = pd.DataFrame(
         {
             'FCS_file': FCS_file,
+            'Individual': ind,
             'Condition': label
         }
     )
@@ -121,7 +125,13 @@ if __name__ == '__main__':
     parser.add_argument(
         '--marker',
         type=str,
-        help='relevant markers for analysis ("," seperated)'
+        help='channel labels to use for PnN fields'
+    )
+    parser.add_argument(
+        '--opt_marker',
+        type=str,
+        default=None,
+        help='channel labels to use for PnS fields'
     )
     parser.add_argument(
         '--marker_idx',
