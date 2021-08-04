@@ -4,23 +4,24 @@ h_dim=256
 in_dim=10
 pool=max
 out_pool=max
-nblock=3
-ncell=4096
+nblock=2
+ncell=1024
 nsubset=20000
 co_factor=5
 
-train_fcs_info=/home/haidyi/Desktop/Data/CytoSet/HEUvsUE/train/train_labels.csv
-test_fcs_info=/home/haidyi/Desktop/Data/CytoSet/HEUvsUE/test/test_labels.csv
-markerfile=/home/haidyi/Desktop/Data/CytoSet/HEUvsUE/marker.csv
+train_fcs_info=/playpen-ssd/haidyi/proj/cytoset/data/HEUvsUE/train/train_labels.csv
+valid_fcs_info=/playpen-ssd/haidyi/proj/cytoset/data/HEUvsUE/valid/valid_labels.csv
+test_fcs_info=/playpen-ssd/haidyi/proj/cytoset/data/HEUvsUE/test/test_labels.csv
+markerfile=/playpen-ssd/haidyi/proj/cytoset/data/HEUvsUE/marker.csv
 
-seed_list=("1" "2" "3" "4" "12345")
+seed_list=("2" "22" "222" "2222" "22222")
 lr=0.0001
 batch_size=200
-n_epochs=100
-log_dir=/home/haidyi/Desktop/Data/CytoSet/exp/HEUvsUE_${ncell}
+n_epochs=50
+log_dir=/playpen-ssd/haidyi/proj/cytoset/data/exp/HEUvsUE_${ncell}
 log_interval=1
 save_interval=1
-patience=100
+patience=5
 
 bin_file=../../train.py
 gpu=$1
@@ -38,6 +39,7 @@ do
     --nsubset ${nsubset} \
     --co_factor ${co_factor} \
     --train_fcs_info ${train_fcs_info} \
+    --valid_fcs_info ${valid_fcs_info} \
     --test_fcs_info ${test_fcs_info} \
     --markerfile ${markerfile} \
     --lr ${lr} \
