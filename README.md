@@ -39,7 +39,15 @@ The pre-processed dataset for training the model can be downloaded from the [goo
 
 ## Citing
 
-TBD
+@inproceedings{10.1145/3459930.3469529,
+author = {Yi, Haidong and Stanley, Natalie},
+title = {CytoSet: Predicting Clinical Outcomes via Set-Modeling of Cytometry Data},
+year = {2021},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3459930.3469529},
+}
+
 
 
 ## Contact
