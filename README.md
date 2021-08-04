@@ -37,6 +37,20 @@ The pre-processed dataset for training the model can be downloaded from the [goo
 * In ``scripts/train/train_[Dataset].sh``, set ``bin_file`` to the path of ``train.py`` and ``gpu`` to the gpu id.
 * Start training: ``bash train_[Dataset].sh``
 
+
+### Testing
+* We provide our pre-trained model on HVTN dataset and test dataset in ``checkpoints``.
+* We also provide our model configuration for each dataset in ``config/model``.
+* To run the testing, you can use the following command:
+```
+python test.py --model checkpoints/HVTN_model.pt --config config/model/ICS/config.json --test_pkl checkpoints/test_sample.pkl
+```
+The evaluation results are:
+| Accuracy  | Area Under Curve |
+|-----------|------------------|
+|   0.958   |     0.962        |
+
+
 ## Citing
 
 @inproceedings{10.1145/3459930.3469529,
